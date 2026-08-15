@@ -1,0 +1,6 @@
+{
+  "name": "Rendez-vous Administratifs",
+  "description": "Application mobile et système complet de prise de rendez-vous administratifs avec tickets, QR codes, validation guichet et notifications FCM",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
