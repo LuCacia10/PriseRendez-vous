@@ -1,3 +1,6 @@
+export const UML_USE_CASE_IMAGE = '/src/assets/images/uml_usecase_fr_1786882506065.jpg';
+export const UML_CLASS_DIAGRAM_IMAGE = '/src/assets/images/uml_class_fr_1786882522184.jpg';
+
 export interface UmlActor {
   id: string;
   name: string;

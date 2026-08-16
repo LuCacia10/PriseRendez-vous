@@ -911,6 +911,10 @@ app.delete('/api/appointments/:id', authenticateToken, (req: AuthenticatedReques
 });
 
 // 7. DELIVERABLES EXPORTS (MYSQL & FLUTTER)
+app.get('/api/export/BDD.sql', (_req: Request, res: Response) => {
+  res.json({ sql: mysqlSchema });
+});
+
 app.get('/api/export/schema.sql', (_req: Request, res: Response) => {
   res.json({ sql: mysqlSchema });
 });

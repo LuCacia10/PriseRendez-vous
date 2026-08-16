@@ -2,11 +2,9 @@ import React from 'react';
 import { User } from '../types';
 import {
   Building2,
-  QrCode,
   Bell,
   Smartphone,
   ShieldCheck,
-  Code2,
   LogOut,
   UserCheck,
   CalendarCheck,
@@ -14,15 +12,14 @@ import {
 
 interface HeaderProps {
   currentUser: User | null;
-  activeView: 'citizen' | 'agent' | 'docs';
-  setActiveView: (view: 'citizen' | 'agent' | 'docs') => void;
+  activeView: 'citizen' | 'agent';
+  setActiveView: (view: 'citizen' | 'agent') => void;
   isMobileFrame: boolean;
   setIsMobileFrame: (val: boolean) => void;
   unreadNotifsCount: number;
   onOpenNotifications: () => void;
   onOpenAuth: () => void;
   onLogout: () => void;
-  onOpenDocs: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -35,7 +32,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenNotifications,
   onOpenAuth,
   onLogout,
-  onOpenDocs,
 }) => {
   return (
     <header className="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-md">
@@ -86,20 +82,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <ShieldCheck className="w-4 h-4" />
             <span>Guichet Agent (Scan)</span>
-          </button>
-
-          <button
-            id="btn-view-docs"
-            onClick={onOpenDocs}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg transition-all ${
-              activeView === 'docs'
-                ? 'bg-purple-600 text-white shadow'
-                : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-            }`}
-          >
-            <Code2 className="w-4 h-4" />
-            <span className="hidden sm:inline">Livrables (SQL/Flutter)</span>
-            <span className="sm:hidden">Livrables</span>
           </button>
         </div>
 

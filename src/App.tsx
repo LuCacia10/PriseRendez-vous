@@ -11,7 +11,6 @@ import { ProfileScreen } from './components/ProfileScreen';
 import { AppointmentDetailModal } from './components/AppointmentDetailModal';
 import { NotificationCenter } from './components/NotificationCenter';
 import { AgentDashboard } from './components/AgentDashboard';
-import { DeliverablesModal } from './components/DeliverablesModal';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -21,14 +20,13 @@ export default function App() {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
   // Navigation & Frame
-  const [activeView, setActiveView] = useState<'citizen' | 'agent' | 'docs'>('citizen');
+  const [activeView, setActiveView] = useState<'citizen' | 'agent'>('citizen');
   const [activeTab, setActiveTab] = useState<'services' | 'history' | 'profile'>('services');
   const [isMobileFrame, setIsMobileFrame] = useState(true);
 
   // Modals & Flows
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [isDocsOpen, setIsDocsOpen] = useState(false);
   const [bookingService, setBookingService] = useState<Service | null>(null);
   const [isBookingMode, setIsBookingMode] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -126,17 +124,13 @@ export default function App() {
       <Header
         currentUser={currentUser}
         activeView={activeView}
-        setActiveView={(v) => {
-          setActiveView(v);
-          if (v === 'docs') setIsDocsOpen(true);
-        }}
+        setActiveView={setActiveView}
         isMobileFrame={isMobileFrame}
         setIsMobileFrame={setIsMobileFrame}
         unreadNotifsCount={unreadNotifsCount}
         onOpenNotifications={() => setIsNotifOpen(true)}
         onOpenAuth={() => setIsAuthOpen(true)}
         onLogout={handleLogout}
-        onOpenDocs={() => setIsDocsOpen(true)}
       />
 
       {/* Main View Area */}
@@ -227,15 +221,6 @@ export default function App() {
         onClose={() => setIsNotifOpen(false)}
         notifications={notifications}
         onRefresh={loadUserData}
-      />
-
-      {/* Deliverables & SQL / Flutter Documentation Modal */}
-      <DeliverablesModal
-        isOpen={isDocsOpen}
-        onClose={() => {
-          setIsDocsOpen(false);
-          if (activeView === 'docs') setActiveView('citizen');
-        }}
       />
     </div>
   );

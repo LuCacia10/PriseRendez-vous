@@ -1,31 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../lib/api';
+import React, { useState } from 'react';
 import {
-  Code2,
-  Database,
-  Smartphone,
-  Copy,
-  Check,
-  Download,
   BookOpen,
   X,
   Server,
   GitBranch,
-  FolderTree,
-  FileCode,
   Layers,
   Users,
   Shield,
   Workflow,
   CheckCircle2,
+  Download,
   Calendar,
   Clock,
   Sparkles,
+  Check,
+  Copy,
 } from 'lucide-react';
-import { mysqlSchema, sqliteSchema } from '../lib/sqlData';
-import { flutterCodebase } from '../lib/flutterData';
 import { gitCommits, gitReadme } from '../lib/gitData';
-import { umlActors, umlUseCases, umlClasses } from '../lib/umlData';
+import { umlActors, umlUseCases, umlClasses, UML_USE_CASE_IMAGE, UML_CLASS_DIAGRAM_IMAGE } from '../lib/umlData';
 
 interface DeliverablesModalProps {
   isOpen: boolean;
@@ -37,38 +29,19 @@ export const DeliverablesModal: React.FC<DeliverablesModalProps> = ({
   onClose,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'sql' | 'flutter' | 'uml' | 'git' | 'api' | 'setup'
-  >('sql');
-  const [selectedSqlEngine, setSelectedSqlEngine] = useState<'mysql' | 'sqlite'>('mysql');
-  const [activeFlutterFile, setActiveFlutterFile] = useState<string>('lib/main.dart');
+    'uml' | 'git' | 'api' | 'setup'
+  >('uml');
   const [selectedUmlView, setSelectedUmlView] = useState<'usecase' | 'class'>('usecase');
   const [selectedActorFilter, setSelectedActorFilter] = useState<string>('all');
   const [copied, setCopied] = useState(false);
 
   if (!isOpen) return null;
 
-  const currentSql =
-    selectedSqlEngine === 'mysql'
-      ? mysqlSchema
-      : sqliteSchema;
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
-  const downloadFile = (filename: string, content: string) => {
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const flutterFileKeys = Object.keys(flutterCodebase);
 
   const filteredUseCases =
     selectedActorFilter === 'all'
@@ -82,19 +55,19 @@ export const DeliverablesModal: React.FC<DeliverablesModalProps> = ({
         <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center font-bold shadow-inner">
-              <Code2 className="w-5 h-5" />
+              <Layers className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <h2 className="text-base font-black text-white tracking-tight">
-                  Livrables & Architecture du Projet
+                  Diagrammes & Architecture du Projet
                 </h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  Frontend: Flutter • Backend: Node.js • Base: MySQL 8.0+
+                  UML 2.5 • API RESTful • Guide Déploiement
                 </span>
               </div>
               <p className="text-xs text-slate-400">
-                Spécifications complètes : Flutter Clean Architecture, API Node.js/Express, Base MySQL relationnelle et diagrammes UML.
+                Diagrammes UML en Français (Cas d'utilisation & Classes), Endpoints API RESTful Node.js et Guide de déploiement.
               </p>
             </div>
           </div>
@@ -110,30 +83,6 @@ export const DeliverablesModal: React.FC<DeliverablesModalProps> = ({
         {/* Tab Navigation */}
         <div className="flex items-center space-x-1 px-6 pt-3 border-b border-slate-800 bg-slate-950/40 text-xs font-semibold overflow-x-auto no-scrollbar">
           <button
-            onClick={() => setActiveTab('sql')}
-            className={`flex items-center space-x-2 px-3.5 py-2.5 rounded-t-xl transition border-b-2 whitespace-nowrap ${
-              activeTab === 'sql'
-                ? 'border-blue-500 text-blue-400 bg-slate-900 font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Database className="w-4 h-4" />
-            <span>1. Schéma Base de Données (MySQL 8.0+ / SQLite)</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('flutter')}
-            className={`flex items-center space-x-2 px-3.5 py-2.5 rounded-t-xl transition border-b-2 whitespace-nowrap ${
-              activeTab === 'flutter'
-                ? 'border-blue-500 text-blue-400 bg-slate-900 font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <Smartphone className="w-4 h-4" />
-            <span>2. Code Flutter (Clean Architecture)</span>
-          </button>
-
-          <button
             onClick={() => setActiveTab('uml')}
             className={`flex items-center space-x-2 px-3.5 py-2.5 rounded-t-xl transition border-b-2 whitespace-nowrap ${
               activeTab === 'uml'
@@ -142,19 +91,7 @@ export const DeliverablesModal: React.FC<DeliverablesModalProps> = ({
             }`}
           >
             <Layers className="w-4 h-4" />
-            <span>3. Diagrammes UML (Cas d'usage & Classes)</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('git')}
-            className={`flex items-center space-x-2 px-3.5 py-2.5 rounded-t-xl transition border-b-2 whitespace-nowrap ${
-              activeTab === 'git'
-                ? 'border-blue-500 text-blue-400 bg-slate-900 font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <GitBranch className="w-4 h-4" />
-            <span>4. Git & Commits Historique</span>
+            <span>1. Diagrammes UML (Cas d'usage & Classes)</span>
           </button>
 
           <button
@@ -166,7 +103,19 @@ export const DeliverablesModal: React.FC<DeliverablesModalProps> = ({
             }`}
           >
             <Server className="w-4 h-4" />
-            <span>5. API RESTful Endpoints (Node.js)</span>
+            <span>2. API RESTful Endpoints (Node.js)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('git')}
+            className={`flex items-center space-x-2 px-3.5 py-2.5 rounded-t-xl transition border-b-2 whitespace-nowrap ${
+              activeTab === 'git'
+                ? 'border-blue-500 text-blue-400 bg-slate-900 font-bold'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <GitBranch className="w-4 h-4" />
+            <span>3. Git & Commits Historique</span>
           </button>
 
           <button
@@ -178,149 +127,13 @@ export const DeliverablesModal: React.FC<DeliverablesModalProps> = ({
             }`}
           >
             <BookOpen className="w-4 h-4" />
-            <span>6. Guide d'Installation</span>
+            <span>4. Guide d'Installation</span>
           </button>
         </div>
 
         {/* Tab Content Body */}
         <div className="flex-1 overflow-y-auto p-6 bg-slate-900/90 font-sans text-xs text-slate-300">
-          {/* TAB 1: SQL SCHEMAS */}
-          {activeTab === 'sql' && (
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
-                <div className="space-y-1">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-bold text-slate-200 text-sm">Schéma SQL :</span>
-                    <div className="inline-flex rounded-xl bg-slate-900 p-1 border border-slate-700">
-                      <button
-                        onClick={() => setSelectedSqlEngine('mysql')}
-                        className={`px-3 py-1 rounded-lg font-bold text-xs transition ${
-                          selectedSqlEngine === 'mysql'
-                            ? 'bg-blue-600 text-white shadow'
-                            : 'text-slate-400 hover:text-white'
-                        }`}
-                      >
-                        MySQL 8.0+ (Base Serveur Principale)
-                      </button>
-                      <button
-                        onClick={() => setSelectedSqlEngine('sqlite')}
-                        className={`px-3 py-1 rounded-lg font-bold text-xs transition ${
-                          selectedSqlEngine === 'sqlite'
-                            ? 'bg-blue-600 text-white shadow'
-                            : 'text-slate-400 hover:text-white'
-                        }`}
-                      >
-                        SQLite (Cache Local Flutter sqflite)
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    Schéma MySQL InnoDB complet : tables relationnelles, clés étrangères ON DELETE CASCADE, indexations B-tree, contraintes uniques et jeux d'essai.
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-2 shrink-0">
-                  <button
-                    onClick={() => copyToClipboard(currentSql)}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold border border-slate-700 transition"
-                  >
-                    {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                    <span>{copied ? 'Copié !' : 'Copier SQL'}</span>
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      downloadFile(`schema.${selectedSqlEngine}.sql`, currentSql)
-                    }
-                    className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow transition"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Télécharger ({selectedSqlEngine}.sql)</span>
-                  </button>
-                </div>
-              </div>
-
-              <pre className="p-4 bg-slate-950 rounded-2xl border border-slate-800 text-[11px] leading-relaxed overflow-x-auto font-mono text-emerald-400 selection:bg-blue-900 shadow-inner max-h-[58vh]">
-                {currentSql}
-              </pre>
-            </div>
-          )}
-
-          {/* TAB 2: FLUTTER CODEBASE */}
-          {activeTab === 'flutter' && (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[68vh]">
-              {/* File Explorer Tree */}
-              <div className="md:col-span-1 bg-slate-950 p-3 rounded-2xl border border-slate-800 flex flex-col overflow-hidden">
-                <div className="flex items-center space-x-2 pb-2 mb-2 border-b border-slate-800">
-                  <FolderTree className="w-4 h-4 text-blue-400" />
-                  <span className="font-bold text-white text-xs">Arborescence Flutter</span>
-                </div>
-
-                <div className="flex-1 overflow-y-auto space-y-1 font-mono text-[11px]">
-                  {flutterFileKeys.map((filePath) => {
-                    const isSelected = activeFlutterFile === filePath;
-                    return (
-                      <button
-                        key={filePath}
-                        onClick={() => setActiveFlutterFile(filePath)}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center space-x-2 transition truncate ${
-                          isSelected
-                            ? 'bg-blue-600 text-white font-bold shadow'
-                            : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
-                        }`}
-                      >
-                        <FileCode className={`w-3.5 h-3.5 shrink-0 ${isSelected ? 'text-white' : 'text-slate-500'}`} />
-                        <span className="truncate">{filePath}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Code Viewer */}
-              <div className="md:col-span-3 bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col overflow-hidden">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
-                  <div className="flex items-center space-x-2">
-                    <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[10px] font-bold">
-                      Dart
-                    </span>
-                    <span className="font-mono text-slate-200 text-xs font-bold">
-                      {activeFlutterFile}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => copyToClipboard(flutterCodebase[activeFlutterFile] || '')}
-                      className="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-[11px] font-bold flex items-center space-x-1"
-                    >
-                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copied ? 'Copié' : 'Copier'}</span>
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        downloadFile(
-                          activeFlutterFile.split('/').pop() || 'file.dart',
-                          flutterCodebase[activeFlutterFile] || ''
-                        )
-                      }
-                      className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold flex items-center space-x-1 shadow"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      <span>Télécharger</span>
-                    </button>
-                  </div>
-                </div>
-
-                <pre className="flex-1 p-3 bg-slate-950 text-blue-300 font-mono text-[11px] leading-relaxed overflow-x-auto overflow-y-auto">
-                  {flutterCodebase[activeFlutterFile] || '// Aucun fichier sélectionné'}
-                </pre>
-              </div>
-            </div>
-          )}
-
-          {/* TAB 3: UML DIAGRAMS */}
+          {/* TAB 1: UML DIAGRAMS */}
           {activeTab === 'uml' && (
             <div className="space-y-4">
               {/* UML Sub-Navigation */}
@@ -373,6 +186,34 @@ export const DeliverablesModal: React.FC<DeliverablesModalProps> = ({
               {/* USE CASE DIAGRAM RENDERER */}
               {selectedUmlView === 'usecase' && (
                 <div className="space-y-6">
+                  {/* Visual Diagram Image */}
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Workflow className="w-4 h-4 text-blue-400" />
+                        <h3 className="font-bold text-slate-200 text-sm">Image Graphique : Diagramme de Cas d'Utilisation UML 2.5</h3>
+                      </div>
+                      <a
+                        href={UML_USE_CASE_IMAGE}
+                        download="diagramme_cas_utilisation_uml.jpg"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Télécharger l'Image HD</span>
+                      </a>
+                    </div>
+                    <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900 shadow-inner">
+                      <img
+                        src={UML_USE_CASE_IMAGE}
+                        alt="Diagramme de Cas d'Utilisation UML 2.5"
+                        referrerPolicy="no-referrer"
+                        className="w-full h-auto object-cover hover:scale-[1.01] transition-transform duration-300"
+                      />
+                    </div>
+                  </div>
+
                   {/* Acteurs */}
                   <div>
                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center space-x-2">
@@ -469,8 +310,37 @@ export const DeliverablesModal: React.FC<DeliverablesModalProps> = ({
 
               {/* CLASS DIAGRAM RENDERER */}
               {selectedUmlView === 'class' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {umlClasses.map((cls) => (
+                <div className="space-y-6">
+                  {/* Visual Class Diagram Image */}
+                  <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Layers className="w-4 h-4 text-purple-400" />
+                        <h3 className="font-bold text-slate-200 text-sm">Image Graphique : Diagramme de Classes UML 2.5 (Entités & Relations)</h3>
+                      </div>
+                      <a
+                        href={UML_CLASS_DIAGRAM_IMAGE}
+                        download="diagramme_classes_uml.jpg"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center space-x-1.5 px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold transition shadow"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        <span>Télécharger l'Image HD</span>
+                      </a>
+                    </div>
+                    <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900 shadow-inner">
+                      <img
+                        src={UML_CLASS_DIAGRAM_IMAGE}
+                        alt="Diagramme de Classes UML 2.5"
+                        referrerPolicy="no-referrer"
+                        className="w-full h-auto object-cover hover:scale-[1.01] transition-transform duration-300"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {umlClasses.map((cls) => (
                     <div
                       key={cls.name}
                       className="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex flex-col"
@@ -566,7 +436,8 @@ export const DeliverablesModal: React.FC<DeliverablesModalProps> = ({
                     </div>
                   ))}
                 </div>
-              )}
+              </div>
+            )}
             </div>
           )}
 
